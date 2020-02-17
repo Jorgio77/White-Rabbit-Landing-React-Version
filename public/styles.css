@@ -2,6 +2,7 @@
 body {
     font-family: Open Sans Condensed !important;
     text-align: center !important;
+    overflow-x: hidden !important;
   }
 
   .sectionTitle {
@@ -119,7 +120,6 @@ body {
     margin: 0, -15px !important;
     width: 100% !important;
     max-width: 100% !important;
-    overflow-x: hidden;
   }
 
   .eventDiv {
@@ -160,6 +160,7 @@ body {
 
   .form {
     margin: 2rem 4rem !important;
+    padding: 2rem 2rem !important;
   }
 
   .form p {
@@ -184,4 +185,3 @@ body {
     font-size: 1rem;
     margin: 0;
   }
-  

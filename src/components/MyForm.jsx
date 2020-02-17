@@ -13,7 +13,8 @@ function MyForm () {
         name: "",
         email: "",
         submitted: false,
-        loading: false
+        loading: false,
+        error: false
     })
 
     function setContactInfo(event) {
@@ -21,37 +22,57 @@ function MyForm () {
         setContact({...contact, [name]: value});
     }
 
-    function sendContact(event) {
-        setContact({ ...contact, loading: true});
-        setInterval(success, 1500);
+    async function sendContact(event) {
+      event.preventDefault();
+      setContact({ ...contact, loading: true});
+      const response = await fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contact)
+      });
+      const success = await response.json();
+      console.log("SUCCESS? ", success);
+      if (success === 1) handleSuccess();
+      else handleError();
     }
 
-    function success() {
-        setContact({ name: "", email: "", submitted: true, loading: false});
+    function handleSuccess() {
+        setContact({ name: "", email: "", submitted: true, loading: false, error: false });
+    }
+
+    function handleError() {
+        setContact({ ...contact, loading: false, error: true });
     }
 
     return(
-    <Form className="form">
-        <Row>
-            <Col lg={6}>
-                <Form.Control type="text" placeholder="First name" onChange={setContactInfo} name="name" value={contact.name} />
-            </Col>
-            <Col lg={6}>
-                <Form.Control type="email" placeholder="Email" name="email" onChange={setContactInfo} value={contact.email} />
-            </Col>
-            <Col lg={12}>
-                {!contact.loading && !contact.submitted && <Button className="button" variant="dark" type="submit" onClick={sendContact}>Submit</Button>}
-                {!contact.loading && contact.submitted && <p> Submitted! </p>}
-                {contact.loading &&        
-                <ClipLoader
-                    css={"margin-top: 25px;"}
-                    size={"20px"} this also works
-                    color={"#123abc"}
-                    loading={contact.loading}
-                />}
-            </Col>
-        </Row>
-    </Form>
+      <Form className="form">
+          <Row>
+              <Col lg={6}>
+                  <Form.Control type="text" placeholder="First name" onChange={setContactInfo} name="name" value={contact.name} />
+              </Col>
+              <Col lg={6}>
+                  <Form.Control type="email" placeholder="Email" name="email" onChange={setContactInfo} value={contact.email} />
+              </Col>
+              <Col lg={12}>
+                  {!contact.loading && !contact.submitted && !contact.error && <Button className="button" variant="dark" type="submit" onClick={sendContact}>Submit</Button>}
+                  {!contact.loading && contact.submitted && !contact.error && <p> Submitted! </p>}
+                  {!contact.loading && contact.error &&
+                    <div>
+                      <p> An error occurred :( <br /> please try again! </p>
+                      <Button className="button" variant="dark" type="submit" onClick={sendContact}>Submit</Button>
+                    </div>
+                  }
+                  {contact.loading &&
+                    <ClipLoader
+                      size={30}
+                      color={"black"}
+                      loading={contact.loading}
+                      css={{ marginTop: 35 }}
+                    />
+                  }
+              </Col>
+          </Row>
+      </Form>
     )
 }
 
